@@ -8,6 +8,11 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
+
+@app.get("/")
+def read_root():
+    return {"message": "Hello, World!"}
+
 # Dependency to get the database session
 def get_db():
     db = SessionLocal()
