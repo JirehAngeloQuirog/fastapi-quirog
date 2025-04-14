@@ -1,6 +1,5 @@
 from pydantic import BaseModel
 
-# Base schema for To-Do tasks
 class ToDoBase(BaseModel):
     title: str
     completed: bool = False

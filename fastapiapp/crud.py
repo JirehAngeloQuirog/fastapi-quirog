@@ -1,6 +1,5 @@
 from sqlalchemy.orm import Session
 from . import models, schemas
-from fastapi import HTTPException
 
 def get_all_todos(db: Session):
     return db.query(models.ToDo).all()
@@ -17,20 +16,18 @@ def create_todo(db: Session, todo: schemas.ToDoCreate):
 
 def update_todo(db: Session, todo_id: int, updated_data: schemas.ToDoUpdate):
     db_todo = get_todo(db, todo_id)
-    if db_todo is None:
-        raise HTTPException(status_code=404, detail="To-Do not found")
-    for key, value in updated_data.dict().items():
-        setattr(db_todo, key, value)
-    db.commit()
-    db.refresh(db_todo)
+    if db_todo:
+        for key, value in updated_data.dict().items():
+            setattr(db_todo, key, value)
+        db.commit()
+        db.refresh(db_todo)
     return db_todo
 
 def delete_todo(db: Session, todo_id: int):
     db_todo = get_todo(db, todo_id)
-    if db_todo is None:
-        raise HTTPException(status_code=404, detail="To-Do not found")
-    db.delete(db_todo)
-    db.commit()
+    if db_todo:
+        db.delete(db_todo)
+        db.commit()
     return db_todo
 
 def filter_todos(db: Session, completed: bool):
