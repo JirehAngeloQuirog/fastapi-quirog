@@ -8,10 +8,13 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-
 @app.get("/")
 def read_root():
     return {"message": "Hello, World!"}
+
+@app.head("/")
+def head_root():
+    return {}  # No content needed, but prevents 405 error
 
 # Dependency to get the database session
 def get_db():
