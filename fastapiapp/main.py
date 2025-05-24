@@ -1,20 +1,20 @@
-from fastapi import FastAPI, Depends, HTTPException
-from sqlalchemy.orm import Session
-from . import crud, models, schemas
-from .database import SessionLocal, engine
+from fastapi import FastAPI, Depends
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import DeclarativeMeta
+from sqlalchemy.orm import sessionmaker, Session
+from .models import TaskCreate, TaskUpdate, Task
+from .crud import get_tasks, create_task, get_task, update_task, delete_task
 
-# Create all the tables in the database (if not already created)
-models.Base.metadata.create_all(bind=engine)
+SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"  # For SQLite; replace with PostgreSQL for production
+
+engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 app = FastAPI()
 
 @app.get("/")
 def read_root():
-    return {"message": "Hello, World!"}
-
-@app.head("/")
-def head_root():
-    return {}  # No content needed, but prevents 405 error
+    return {"message": '/docs'}
 
 # Dependency to get the database session
 def get_db():
@@ -24,36 +24,22 @@ def get_db():
     finally:
         db.close()
 
-# Create a new To-Do item
-@app.post("/todos/", response_model=schemas.ToDoOut)
-def create(todo: schemas.ToDoCreate, db: Session = Depends(get_db)):
-    return crud.create_todo(db, todo)
+@app.get("/tasks/")
+def read_tasks(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+    return get_tasks(db=db, skip=skip, limit=limit)
 
-# Get all To-Do items
-@app.get("/todos/", response_model=list[schemas.ToDoOut])
-def read_all(db: Session = Depends(get_db)):
-    return crud.get_all_todos(db)
+@app.post("/tasks/")
+def create_new_task(task: TaskCreate, db: Session = Depends(get_db)):
+    return create_task(db=db, task=task)
 
-# Get a single To-Do item by ID
-@app.get("/todos/{todo_id}", response_model=schemas.ToDoOut)
-def read_one(todo_id: int, db: Session = Depends(get_db)):
-    db_todo = crud.get_todo(db, todo_id)
-    if db_todo is None:
-        raise HTTPException(status_code=404, detail="To-Do not found")
-    return db_todo
+@app.get("/tasks/{task_id}")
+def read_task(task_id: int, db: Session = Depends(get_db)):
+    return get_task(db=db, task_id=task_id)
 
-# Update a To-Do item by ID
-@app.put("/todos/{todo_id}", response_model=schemas.ToDoOut)
-def update(todo_id: int, todo: schemas.ToDoUpdate, db: Session = Depends(get_db)):
-    return crud.update_todo(db, todo_id, todo)
+@app.put("/tasks/{task_id}")
+def update_existing_task(task_id: int, task: TaskUpdate, db: Session = Depends(get_db)):
+    return update_task(db=db, task_id=task_id, task=task)
 
-# Delete a To-Do item by ID
-@app.delete("/todos/{todo_id}")
-def delete(todo_id: int, db: Session = Depends(get_db)):
-    crud.delete_todo(db, todo_id)
-    return {"ok": True}
-
-# Filter To-Do items by completed status
-@app.get("/todos/filter/{completed}", response_model=list[schemas.ToDoOut])
-def filter_tasks(completed: bool, db: Session = Depends(get_db)):
-    return crud.filter_todos(db, completed)
+@app.delete("/tasks/{task_id}")
+def delete_existing_task(task_id: int, db: Session = Depends(get_db)):
+    return delete_task(db=db, task_id=task_id)

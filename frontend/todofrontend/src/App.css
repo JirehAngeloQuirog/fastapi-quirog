@@ -1,0 +1,131 @@
+body {
+  font-family: Arial, sans-serif;
+  transition: background 0.3s, color 0.3s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+.light-mode {
+  background: #f4f4f4;
+  color: #333;
+}
+
+.dark-mode {
+  background: #222;
+  color: white;
+}
+
+.container {
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  padding: 20px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.dark-mode .container {
+  background: #333;
+}
+
+.input-container {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+  justify-content: center;
+}
+
+.input-container input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.task-actions button {
+  margin-left: 10px;
+}
+
+button {
+  padding: 10px 15px;
+  cursor: pointer;
+  border: none;
+  background: #007bff;
+  color: white;
+  border-radius: 10px;
+}
+
+button:hover {
+  background: #0056b3;
+}
+
+.filters {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding: 0 10px;
+}
+
+.filters button {
+  background: transparent;
+  color: #555;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+
+.filters button:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.filters button.active {
+  color: #007bff;
+  background: rgba(0, 123, 255, 0.1);
+}
+
+.dark-mode .filters button {
+  color: #ddd;
+}
+
+.dark-mode .filters button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .filters button.active {
+  color: #4da6ff;
+  background: rgba(0, 123, 255, 0.2);
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: space-between;
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+}
+
+li.completed span {
+  text-decoration: line-through;
+  color: gray;
+}
+
+.toggle-mode {
+  background: #ff9800;
+  margin-bottom: 10px;
+}
+
+.toggle-mode:hover {
+  background: #e68900;
+}
